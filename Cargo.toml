@@ -1,0 +1,10 @@
+[package]
+name = "dummy-esp-idf-svc"
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+publish = false
+
+[dependencies]
+dummy-esp-idf-sys = { path = "../dummy-esp-idf-sys" }
+embedded-svc = "0.23"
