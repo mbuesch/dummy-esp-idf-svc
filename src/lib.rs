@@ -12,8 +12,7 @@ pub mod systime {
     }
 }
 
-pub mod timer {
-}
+pub mod timer {}
 
 pub mod nvs {
     use dummy_esp_idf_sys::EspError;
@@ -22,11 +21,7 @@ pub mod nvs {
     pub struct EspNvs<T>(PhantomData<T>);
 
     impl<T> EspNvs<T> {
-        pub fn new(
-            _: EspNvsPartition<T>,
-            _: &str,
-            _: bool
-        ) -> Result<Self, EspError> {
+        pub fn new(_: EspNvsPartition<T>, _: &str, _: bool) -> Result<Self, EspError> {
             Ok(Self(PhantomData))
         }
 
@@ -56,19 +51,11 @@ pub mod nvs {
             Ok(Some(0))
         }
 
-        fn get_raw<'a>(
-            &self,
-            _: &str,
-            _: &'a mut [u8]
-        ) -> Result<Option<&'a [u8]>, EspError> {
+        fn get_raw<'a>(&self, _: &str, _: &'a mut [u8]) -> Result<Option<&'a [u8]>, EspError> {
             Ok(None)
         }
 
-        fn set_raw(
-            &mut self,
-            _: &str,
-            _: &[u8]
-        ) -> Result<bool, Self::Error> {
+        fn set_raw(&mut self, _: &str, _: &[u8]) -> Result<bool, Self::Error> {
             Ok(true)
         }
     }
