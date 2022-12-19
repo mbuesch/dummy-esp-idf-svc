@@ -7,4 +7,5 @@ publish = false
 
 [dependencies]
 dummy-esp-idf-sys = { path = "../dummy-esp-idf-sys" }
+dummy-esp-idf-hal = { path = "../dummy-esp-idf-hal" }
 embedded-svc = "0.23"

@@ -14,6 +14,42 @@ pub mod systime {
 
 pub mod timer {}
 
+pub mod eventloop {
+    use dummy_esp_idf_sys::EspError;
+    use std::marker::PhantomData;
+
+    pub struct System;
+
+    pub struct EspEventLoop<T>(PhantomData<T>);
+    pub type EspSystemEventLoop = EspEventLoop<System>;
+
+    impl EspEventLoop<System> {
+        pub fn take() -> Result<Self, EspError> {
+            Ok(Self(PhantomData))
+        }
+    }
+}
+
+pub mod wifi {
+    use dummy_esp_idf_sys::EspError;
+    use dummy_esp_idf_hal::{peripheral::Peripheral, modem::WifiModemPeripheral};
+    use std::marker::PhantomData;
+    use super::eventloop::EspSystemEventLoop;
+    use super::nvs::EspDefaultNvsPartition;
+
+    pub struct EspWifi<'a>(PhantomData<&'a ()>);
+
+    impl<'a> EspWifi<'a> {
+        pub fn new<M: WifiModemPeripheral>(
+            _: impl Peripheral<P = M> + 'a,
+            _: EspSystemEventLoop,
+            _: Option<EspDefaultNvsPartition>,
+        ) -> Result<Self, EspError> {
+            Ok(Self(PhantomData))
+        }
+    }
+}
+
 pub mod nvs {
     use dummy_esp_idf_sys::EspError;
     use std::marker::PhantomData;
@@ -62,6 +98,7 @@ pub mod nvs {
 
     pub struct NvsDefault(());
     pub struct EspNvsPartition<T>(PhantomData<T>);
+    pub type EspDefaultNvsPartition = EspNvsPartition<NvsDefault>;
 
     impl EspNvsPartition<NvsDefault> {
         pub fn take() -> Result<Self, EspError> {
