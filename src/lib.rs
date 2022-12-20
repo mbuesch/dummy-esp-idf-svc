@@ -31,11 +31,11 @@ pub mod eventloop {
 }
 
 pub mod wifi {
-    use dummy_esp_idf_sys::EspError;
-    use dummy_esp_idf_hal::{peripheral::Peripheral, modem::WifiModemPeripheral};
-    use std::marker::PhantomData;
     use super::eventloop::EspSystemEventLoop;
     use super::nvs::EspDefaultNvsPartition;
+    use dummy_esp_idf_hal::{modem::WifiModemPeripheral, peripheral::Peripheral};
+    use dummy_esp_idf_sys::EspError;
+    use std::marker::PhantomData;
 
     pub struct EspWifi<'a>(PhantomData<&'a ()>);
 
