@@ -35,17 +35,83 @@ pub mod wifi {
     use super::nvs::EspDefaultNvsPartition;
     use dummy_esp_idf_hal::{modem::WifiModemPeripheral, peripheral::Peripheral};
     use dummy_esp_idf_sys::EspError;
+    use embedded_svc::wifi::Configuration;
     use std::marker::PhantomData;
 
-    pub struct EspWifi<'a>(PhantomData<&'a ()>);
+    pub enum WifiDeviceId {
+        Ap,
+        Sta,
+    }
+
+    pub struct EspWifi<'a> {
+        drv: WifiDriver<'a>,
+    }
 
     impl<'a> EspWifi<'a> {
+        pub fn new<M: WifiModemPeripheral>(
+            modem: impl Peripheral<P = M> + 'a,
+            sysloop: EspSystemEventLoop,
+            nvs: Option<EspDefaultNvsPartition>,
+        ) -> Result<Self, EspError> {
+            Ok(Self {
+                drv: WifiDriver::new(modem, sysloop, nvs).unwrap(),
+            })
+        }
+
+        pub fn driver(&self) -> &WifiDriver<'a> {
+            &self.drv
+        }
+
+        pub fn driver_mut(&mut self) -> &mut WifiDriver<'a> {
+            &mut self.drv
+        }
+
+        pub fn start(&mut self) -> Result<(), EspError> {
+            Ok(())
+        }
+
+        pub fn stop(&mut self) -> Result<(), EspError> {
+            Ok(())
+        }
+
+        pub fn connect(&mut self) -> Result<(), EspError> {
+            Ok(())
+        }
+
+        pub fn disconnect(&mut self) -> Result<(), EspError> {
+            Ok(())
+        }
+
+        pub fn set_configuration(&mut self, _: &Configuration) -> Result<(), EspError> {
+            Ok(())
+        }
+    }
+
+    pub struct WifiDriver<'a>(PhantomData<&'a ()>);
+
+    impl<'a> WifiDriver<'a> {
         pub fn new<M: WifiModemPeripheral>(
             _: impl Peripheral<P = M> + 'a,
             _: EspSystemEventLoop,
             _: Option<EspDefaultNvsPartition>,
         ) -> Result<Self, EspError> {
             Ok(Self(PhantomData))
+        }
+
+        pub fn set_callbacks<R, T>(
+            &mut self,
+            _rx_callback: R,
+            _tx_callback: T,
+        ) -> Result<(), EspError>
+        where
+            R: FnMut(WifiDeviceId, &[u8]) -> Result<(), EspError> + Send + 'static,
+            T: FnMut(WifiDeviceId, &[u8], bool) + Send + 'static,
+        {
+            Ok(())
+        }
+
+        pub fn is_connected(&self) -> Result<bool, EspError> {
+            Ok(true)
         }
     }
 }
