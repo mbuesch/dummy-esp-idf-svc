@@ -35,9 +35,10 @@ pub mod wifi {
     use super::nvs::EspDefaultNvsPartition;
     use dummy_esp_idf_hal::{modem::WifiModemPeripheral, peripheral::Peripheral};
     use dummy_esp_idf_sys::EspError;
-    use embedded_svc::wifi::Configuration;
+    use embedded_svc::wifi::{AccessPointInfo, Configuration};
     use std::marker::PhantomData;
 
+    #[derive(Copy, Clone, Debug, Eq, PartialEq)]
     pub enum WifiDeviceId {
         Ap,
         Sta,
@@ -84,6 +85,10 @@ pub mod wifi {
 
         pub fn set_configuration(&mut self, _: &Configuration) -> Result<(), EspError> {
             Ok(())
+        }
+
+        pub fn scan(&mut self) -> Result<Vec<AccessPointInfo>, EspError> {
+            Ok(vec![])
         }
     }
 
