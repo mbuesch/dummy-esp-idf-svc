@@ -30,13 +30,55 @@ pub mod eventloop {
     }
 }
 
+pub mod netif {
+    use dummy_esp_idf_sys::EspError;
+    use embedded_svc::ipv4::IpInfo;
+
+    pub struct EspNetif(pub ());
+
+    impl EspNetif {
+        pub fn get_ip_info(&self) -> Result<IpInfo, EspError> {
+            Err(EspError::from(1).unwrap())
+        }
+    }
+}
+
 pub mod wifi {
     use super::eventloop::EspSystemEventLoop;
+    use super::netif::EspNetif;
     use super::nvs::EspDefaultNvsPartition;
     use dummy_esp_idf_hal::{modem::WifiModemPeripheral, peripheral::Peripheral};
     use dummy_esp_idf_sys::EspError;
     use embedded_svc::wifi::{AccessPointInfo, Configuration};
     use std::marker::PhantomData;
+
+    pub mod config {
+        #[derive(Clone, Debug, PartialEq, Eq, Default)]
+        pub struct ScanConfig {
+            pub bssid: Option<[u8; 6]>,
+            pub ssid: Option<heapless::String<32>>,
+            pub channel: Option<u8>,
+            pub scan_type: ScanType,
+            pub show_hidden: bool,
+        }
+
+        #[derive(Clone, Debug, PartialEq, Eq)]
+        pub enum ScanType {
+            Active {
+                min: core::time::Duration,
+                max: core::time::Duration,
+            },
+            Passive(core::time::Duration),
+        }
+        impl Default for ScanType {
+            fn default() -> Self {
+                ScanType::Active {
+                    min: core::time::Duration::from_secs(0),
+                    max: core::time::Duration::from_secs(0),
+                }
+            }
+        }
+    }
 
     #[derive(Copy, Clone, Debug, Eq, PartialEq)]
     pub enum WifiDeviceId {
@@ -46,6 +88,7 @@ pub mod wifi {
 
     pub struct EspWifi<'a> {
         drv: WifiDriver<'a>,
+        sta_netif: EspNetif,
     }
 
     impl<'a> EspWifi<'a> {
@@ -56,6 +99,7 @@ pub mod wifi {
         ) -> Result<Self, EspError> {
             Ok(Self {
                 drv: WifiDriver::new(modem, sysloop, nvs).unwrap(),
+                sta_netif: EspNetif(()),
             })
         }
 
@@ -87,8 +131,20 @@ pub mod wifi {
             Ok(())
         }
 
-        pub fn scan(&mut self) -> Result<Vec<AccessPointInfo>, EspError> {
+        pub fn start_scan(&mut self, _: &config::ScanConfig, _: bool) -> Result<(), EspError> {
+            Ok(())
+        }
+
+        pub fn stop_scan(&mut self) -> Result<(), EspError> {
+            Ok(())
+        }
+
+        pub fn get_scan_result(&mut self) -> Result<Vec<AccessPointInfo>, EspError> {
             Ok(vec![])
+        }
+
+        pub fn sta_netif(&self) -> &EspNetif {
+            &self.sta_netif
         }
     }
 
@@ -116,6 +172,14 @@ pub mod wifi {
         }
 
         pub fn is_connected(&self) -> Result<bool, EspError> {
+            Ok(true)
+        }
+
+        pub fn is_sta_connected(&self) -> Result<bool, EspError> {
+            Ok(true)
+        }
+
+        pub fn is_started(&self) -> Result<bool, EspError> {
             Ok(true)
         }
     }
