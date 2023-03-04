@@ -203,6 +203,14 @@ pub mod nvs {
         pub fn remove(&mut self, _: &str) -> Result<bool, EspError> {
             Ok(true)
         }
+
+        pub fn get_raw<'a>(&self, _: &str, _: &'a mut [u8]) -> Result<Option<&'a [u8]>, EspError> {
+            Ok(Some(&[]))
+        }
+
+        pub fn set_raw(&mut self, _: &str, _: &[u8]) -> Result<bool, EspError> {
+            Ok(true)
+        }
     }
 
     impl<T> embedded_svc::storage::StorageBase for EspNvs<T> {
