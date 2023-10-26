@@ -139,6 +139,10 @@ pub mod wifi {
             Ok(())
         }
 
+        pub fn is_scan_done(&self) -> Result<bool, EspError> {
+            Ok(true)
+        }
+
         pub fn get_scan_result(&mut self) -> Result<Vec<AccessPointInfo>, EspError> {
             Ok(vec![])
         }
